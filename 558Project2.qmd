@@ -1,0 +1,129 @@
+---
+title: "558 Project 2"
+format: pdf
+editor: visual
+---
+
+```{r}
+library(httr)
+library(jsonlite)
+library(tibble)
+
+base_url <- "https://docs.aviationapi.com/#"
+
+airports_function <- function() {
+  endpoint <- paste0(base_url, "/airports")
+  res <- GET(endpoint)
+  stop_for_status(res)
+  data <- fromJSON(content(res, "text", encoding = "UTF-8"), flatten = TRUE)
+  as_tibble(data)
+}
+```
+
+Function 1:
+```{r}
+get_charts <- function(state = NULL, airport = NULL) {
+  endpoint <- paste0(base_url, "/charts")
+  params <- list(
+    state = state,
+    airport = airport
+  )
+  res <- GET(endpoint, query = params)
+  stop_for_status(res)
+  data <- fromJSON(content(res, "text", encoding = "UTF-8"), flatten = TRUE)
+  as_tibble(data)
+}
+```
+
+Function 2:
+```{r}
+get_airports <- function(state = NULL, airport = NULL, city = NULL) {
+  endpoint <- paste0(base_url, "/airports")
+  params <- list(
+    state = state,
+    airport = airport,
+    city = city
+  )
+  res <- GET(endpoint, query = params)
+  stop_for_status(res)
+  data <- fromJSON(content(res, "text", encoding = "UTF-8"), flatten = TRUE)
+  as_tibble(data)
+}
+```
+
+Function 3
+```{r}
+get_preferred_routes <- function(departure = NULL, arrival = NULL) {
+  endpoint <- paste0(base_url, "/preferred_routes")
+  params <- list(
+    departure = departure,
+    arrival = arrival
+  )
+  res <- GET(endpoint, query = params)
+  stop_for_status(res)
+  data <- fromJSON(content(res, "text", encoding = "UTF-8"), flatten = TRUE)
+  as_tibble(data)
+}
+```
+
+Function 4
+```{r}
+get_weather <- function(airport = NULL) {
+  endpoint <- paste0(base_url, "/weather")
+  params <- list(
+    airport = airport
+  )
+  res <- GET(endpoint, query = params)
+  stop_for_status(res)
+  data <- fromJSON(content(res, "text", encoding = "UTF-8"), flatten = TRUE)
+  as_tibble(data)
+}
+```
+
+Function 5
+```{r}
+get_vatsim_controllers <- function() {
+  endpoint <- paste0(base_url, "/vatsim/controllers")
+  res <- GET(endpoint)
+  stop_for_status(res)
+  data <- fromJSON(content(res, "text", encoding = "UTF-8"), flatten = TRUE)
+  as_tibble(data)
+}
+```
+
+Function 6
+```{r}
+get_vatsim_pilots <- function() {
+  endpoint <- paste0(base_url, "/vatsim/pilots")
+  res <- GET(endpoint)
+  stop_for_status(res)
+  data <- fromJSON(content(res, "text", encoding = "UTF-8"), flatten = TRUE)
+  as_tibble(data)
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
