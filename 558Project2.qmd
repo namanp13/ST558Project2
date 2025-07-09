@@ -4,124 +4,70 @@ format: pdf
 editor: visual
 ---
 
+Function 1: Allows you to get players by the name
+
 ```{r}
-library(httr)
-library(jsonlite)
-library(tibble)
-
-base_url <- "https://docs.aviationapi.com/#"
-
-airports_function <- function() {
-  endpoint <- paste0(base_url, "/airports")
-  res <- GET(endpoint)
-  stop_for_status(res)
-  data <- fromJSON(content(res, "text", encoding = "UTF-8"), flatten = TRUE)
-  as_tibble(data)
+get_player <- function(name) {
+  url <- paste0("https://www.balldontlie.io/api/v1/players?search=", name)
+  httr::GET(url)$content |>
+    rawToChar() |>
+    jsonlite::fromJSON() |>
+    purrr::pluck("data") |>
+    tibble::as_tibble()
 }
 ```
 
-Function 1:
+Function 2: Allows you to get all the teams
+
 ```{r}
-get_charts <- function(state = NULL, airport = NULL) {
-  endpoint <- paste0(base_url, "/charts")
-  params <- list(
-    state = state,
-    airport = airport
-  )
-  res <- GET(endpoint, query = params)
-  stop_for_status(res)
-  data <- fromJSON(content(res, "text", encoding = "UTF-8"), flatten = TRUE)
-  as_tibble(data)
+get_teams <- function() {
+  url <- "https://www.balldontlie.io/api/v1/teams"
+  httr::GET(url)$content |>
+    rawToChar() |>
+    jsonlite::fromJSON() |>
+    purrr::pluck("data") |>
+    tibble::as_tibble()
 }
 ```
 
-Function 2:
-```{r}
-get_airports <- function(state = NULL, airport = NULL, city = NULL) {
-  endpoint <- paste0(base_url, "/airports")
-  params <- list(
-    state = state,
-    airport = airport,
-    city = city
-  )
-  res <- GET(endpoint, query = params)
-  stop_for_status(res)
-  data <- fromJSON(content(res, "text", encoding = "UTF-8"), flatten = TRUE)
-  as_tibble(data)
-}
-```
+Function 3: Allows you to get names for a team and a date
 
-Function 3
 ```{r}
-get_preferred_routes <- function(departure = NULL, arrival = NULL) {
-  endpoint <- paste0(base_url, "/preferred_routes")
-  params <- list(
-    departure = departure,
-    arrival = arrival
-  )
-  res <- GET(endpoint, query = params)
-  stop_for_status(res)
-  data <- fromJSON(content(res, "text", encoding = "UTF-8"), flatten = TRUE)
-  as_tibble(data)
-}
-```
-
-Function 4
-```{r}
-get_weather <- function(airport = NULL) {
-  endpoint <- paste0(base_url, "/weather")
-  params <- list(
-    airport = airport
-  )
-  res <- GET(endpoint, query = params)
-  stop_for_status(res)
-  data <- fromJSON(content(res, "text", encoding = "UTF-8"), flatten = TRUE)
-  as_tibble(data)
-}
-```
-
-Function 5
-```{r}
-get_vatsim_controllers <- function() {
-  endpoint <- paste0(base_url, "/vatsim/controllers")
-  res <- GET(endpoint)
-  stop_for_status(res)
-  data <- fromJSON(content(res, "text", encoding = "UTF-8"), flatten = TRUE)
-  as_tibble(data)
-}
-```
-
-Function 6
-```{r}
-get_vatsim_pilots <- function() {
-  endpoint <- paste0(base_url, "/vatsim/pilots")
-  res <- GET(endpoint)
-  stop_for_status(res)
-  data <- fromJSON(content(res, "text", encoding = "UTF-8"), flatten = TRUE)
-  as_tibble(data)
+get_games <- function(team_id, date) {
+  url <- paste0("https://www.balldontlie.io/api/v1/games?team_ids[]=", team_id, "&dates[]=", date)
+  httr::GET(url)$content |>
+    rawToChar() |>
+    jsonlite::fromJSON() |>
+    purrr::pluck("data") |>
+    tibble::as_tibble()
 }
 ```
 
 
+Function 4: Allows you to get some player stats for a game
 
+```{r}
+get_game_stats <- function(game_id) {
+  url <- paste0("https://www.balldontlie.io/api/v1/stats?game_ids[]=", game_id)
+  httr::GET(url)$content |>
+    rawToChar() |>
+    jsonlite::fromJSON() |>
+    purrr::pluck("data") |>
+    tibble::as_tibble()
+}
+```
 
+Function 5: Allows you to get all the seasons
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+```{r}
+get_seasons <- function() {
+  url <- "https://www.balldontlie.io/api/v1/seasons"
+  httr::GET(url)$content |>
+    rawToChar() |>
+    jsonlite::fromJSON() |>
+    tibble::as_tibble()
+}
+```
 
 
 
