@@ -4,70 +4,99 @@ format: pdf
 editor: visual
 ---
 
+```{r}
+api_key <- "1f08e5ca-ec1f-4a50-805b-203ad159024c"
+```
+
+
 Function 1: Allows you to get players by the name
 
 ```{r}
-get_player <- function(name) {
-  url <- paste0("https://www.balldontlie.io/api/v1/players?search=", name)
-  httr::GET(url)$content |>
-    rawToChar() |>
+get_player <- function(name, api_key) {
+  url <- paste0("https://api.balldontlie.io/v1/players?search=", name)
+  response <- httr::GET(url, httr::add_headers(Authorization = api_key))
+  
+  httr::content(response, as = "text", encoding = "UTF-8") |>
     jsonlite::fromJSON() |>
     purrr::pluck("data") |>
     tibble::as_tibble()
 }
 ```
 
-Function 2: Allows you to get all the teams
-
+Function 2: Allows you to get all teams
 ```{r}
-get_teams <- function() {
-  url <- "https://www.balldontlie.io/api/v1/teams"
-  httr::GET(url)$content |>
-    rawToChar() |>
+get_teams <- function(api_key) {
+  url2 <- "https://api.balldontlie.io/v1/teams"
+  response2 <- httr::GET(url2, httr::add_headers(Authorization = api_key))
+  
+  httr::content(response2, as = "text", encoding = "UTF-8") |>
     jsonlite::fromJSON() |>
     purrr::pluck("data") |>
     tibble::as_tibble()
 }
 ```
 
-Function 3: Allows you to get names for a team and a date
-
+Function 3: Allows you to get all games
 ```{r}
-get_games <- function(team_id, date) {
-  url <- paste0("https://www.balldontlie.io/api/v1/games?team_ids[]=", team_id, "&dates[]=", date)
-  httr::GET(url)$content |>
-    rawToChar() |>
+get_games <- function(id, date, api_key) {
+  url3 <- paste0("https://api.balldontlie.io/v1/games?team_ids[]=", id, "&dates[]=", date)
+  response3 <- httr::GET(url3, httr::add_headers(Authorization = api_key))
+  
+  httr::content(response3, as = "text", encoding = "UTF-8") |>
     jsonlite::fromJSON() |>
     purrr::pluck("data") |>
     tibble::as_tibble()
 }
 ```
 
-
-Function 4: Allows you to get some player stats for a game
-
-```{r}
-get_game_stats <- function(game_id) {
-  url <- paste0("https://www.balldontlie.io/api/v1/stats?game_ids[]=", game_id)
-  httr::GET(url)$content |>
-    rawToChar() |>
-    jsonlite::fromJSON() |>
-    purrr::pluck("data") |>
-    tibble::as_tibble()
-}
-```
-
-Function 5: Allows you to get all the seasons
+Test Functions
 
 ```{r}
-get_seasons <- function() {
-  url <- "https://www.balldontlie.io/api/v1/seasons"
-  httr::GET(url)$content |>
-    rawToChar() |>
-    jsonlite::fromJSON() |>
-    tibble::as_tibble()
-}
+players <- get_player("Curry", api_key)
+teams <- get_teams(api_key)
+games <- get_games(id = 1, date = "2018-10-1", api_key)
 ```
+
+Numerical and graphical summaries
+
+```{r}
+table(teams_data$conference, teams_data$division)
+```
+
+```{r}
+teams_data %>%
+  group_by(conference) %>%
+  summarise(n_teams = n())
+```
+
+```{r}
+players_data <- get_player("Smith", api_key)
+games_data <- get_games(id = 1, date = "2018-10-01", api_key)
+```
+
+
+
+```{r}
+games_data %>%
+  summarise(
+    avg_home_score = mean(home_team_score),
+    avg_visitor_score = mean(visitor_team_score)
+  )
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
