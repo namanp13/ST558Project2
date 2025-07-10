@@ -18,6 +18,8 @@ api_key <- "1f08e5ca-ec1f-4a50-805b-203ad159024c"
 
 Function 1: Allows you to get players by the name
 
+I used purrr::pluck (even though it's not covered) online but I saw that it was an easier way to extract lists from JSON files. It's because fromJSON() returns a nested list and I wanted the data inside that list. Pluck from the purrr package is a way to extract that data (found it on Tidyverse website)
+
 ```{r}
 get_player <- function(name, api_key) {
   url <- paste0("https://api.balldontlie.io/v1/players?search=", name)
@@ -88,8 +90,7 @@ ggplot(teams_data, aes(x = conference, fill = division)) +
   labs(
     title = "Length by Team",
     x = "Team",
-    y = "Length of Name"
-  )
+    y = "Length of Name")
 ```
 
 ```{r}
@@ -109,8 +110,7 @@ ggplot(players_data, aes(x = position)) +
   labs(
     title = "# of Players by Position",
     x = "Position",
-    y = "Count"
-  )
+    y = "Count")
 ```
 
 ```{r}
@@ -119,8 +119,7 @@ ggplot(players_data, aes(x = as.numeric(draft_year))) +
   labs(
     title = "Draft Year",
     x = "Draft Year",
-    y = "Number of Players"
-  )
+    y = "Number of Players")
 ```
 
 
