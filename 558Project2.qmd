@@ -5,6 +5,13 @@ editor: visual
 ---
 
 ```{r}
+library(ggplot2)
+library(dplyr)
+library(purrr)
+```
+
+
+```{r}
 api_key <- "1f08e5ca-ec1f-4a50-805b-203ad159024c"
 ```
 
@@ -36,25 +43,11 @@ get_teams <- function(api_key) {
 }
 ```
 
-Function 3: Allows you to get all games
-```{r}
-get_games <- function(id, date, api_key) {
-  url3 <- paste0("https://api.balldontlie.io/v1/games?team_ids[]=", id, "&dates[]=", date)
-  response3 <- httr::GET(url3, httr::add_headers(Authorization = api_key))
-  
-  httr::content(response3, as = "text", encoding = "UTF-8") |>
-    jsonlite::fromJSON() |>
-    purrr::pluck("data") |>
-    tibble::as_tibble()
-}
-```
-
 Test Functions
 
 ```{r}
-players <- get_player("Curry", api_key)
+players <- get_player(name = "Smith", api_key)
 teams <- get_teams(api_key)
-games <- get_games(id = 1, date = "2018-10-1", api_key)
 ```
 
 Numerical and graphical summaries
@@ -70,24 +63,65 @@ teams_data %>%
 ```
 
 ```{r}
-players_data <- get_player("Smith", api_key)
-games_data <- get_games(id = 1, date = "2018-10-01", api_key)
+table(players_data$first_name)
 ```
 
-
+```{r}
+teams_data |>
+  mutate(city_length = nchar(city)) |>
+  group_by(conference)  |>
+  summarise(avg_city_length = mean(city_length))
+```
 
 ```{r}
-games_data %>%
-  summarise(
-    avg_home_score = mean(home_team_score),
-    avg_visitor_score = mean(visitor_team_score)
+ggplot(teams_data, aes(x = conference, fill = division)) +
+  geom_bar() +
+  labs(title = "Conference and Division", x = "Conference", y = "Count", fill = "Division")
+```
+
+```{r, fig.width=12, fig.height=6}
+ teams_data  |>
+  mutate(city_length = nchar(city))  |>
+  ggplot(aes(x = reorder(full_name, city_length), y = city_length)) +
+  geom_bar(stat = "identity", fill = "green") +
+  coord_flip() +
+  labs(
+    title = "Length by Team",
+    x = "Team",
+    y = "Length of Name"
   )
 ```
 
+```{r}
+heatmap_for_teams <- teams_data  |>
+  count(conference, division)
 
+ggplot(heatmap_for_teams, aes(x = conference, y = division, fill = n)) +
+  geom_tile() +
+  labs(title = "Conference vs Division", x = "Conference", y = "Division", fill = "Teams")
+```
 
+```{r}
+library(ggplot2)
 
+ggplot(players_data, aes(x = position)) +
+  geom_bar(fill = "red") +
+  labs(
+    title = "# of Players by Position",
+    x = "Position",
+    y = "Count"
+  )
+```
 
+```{r}
+ggplot(players_data, aes(x = as.numeric(draft_year))) +
+  geom_histogram(binwidth = 1, fill = "orange", color = "yellow") +
+  labs(
+    title = "Draft Year",
+    x = "Draft Year",
+    y = "Number of Players"
+  )
+```
 
 
 
